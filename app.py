@@ -1,6 +1,6 @@
 import streamlit as st
 import sqlite3
-import bcrypt
+import hashlib
 from datetime import datetime
 from groq import Groq
 
@@ -76,9 +76,11 @@ if "logged_in" not in st.session_state:
 # ==========================
 def signup(username, password):
     try:
-        hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+       hashed = hashlib.sha256(
+    password.encode()
+).hexdigest()
 
-        cursor.execute("""
+ cursor.execute("""
         INSERT INTO users(username, password_hash, created_at)
         VALUES (?, ?, ?)
         """, (username, hashed, datetime.now().isoformat()))
@@ -92,7 +94,14 @@ def login(username, password):
     cursor.execute("SELECT id, password_hash FROM users WHERE username=?", (username,))
     user = cursor.fetchone()
 
-    if user and bcrypt.checkpw(password.encode(), user[1]):
+if user:
+    password_hash = user[1]
+
+    hashed_input = hashlib.sha256(
+        password.encode()
+    ).hexdigest()
+
+    if hashed_input == password_hash:
         st.session_state.logged_in = True
         st.session_state.user_id = user[0]
         st.session_state.username = username
