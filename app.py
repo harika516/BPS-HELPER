@@ -76,17 +76,47 @@ if "logged_in" not in st.session_state:
 # ==========================
 def signup(username, password):
     try:
-       hashed = hashlib.sha256(
-    password.encode()
-).hexdigest()
+        hashed = hashlib.sha256(
+            password.encode()
+        ).hexdigest()
 
- def login(username, password):
+        cursor.execute(
+            """
+            INSERT INTO users(username, password_hash, created_at)
+            VALUES (?, ?, ?)
+            """,
+            (username, hashed, datetime.now().isoformat())
+        )
+
+        conn.commit()
+        return True, "Account created!"
+
+    except:
+        return False, "Username already exists"
+
+
+def login(username, password):
     cursor.execute(
         "SELECT id, password_hash FROM users WHERE username=?",
         (username,)
     )
 
     user = cursor.fetchone()
+
+    if user:
+        password_hash = user[1]
+
+        hashed_input = hashlib.sha256(
+            password.encode()
+        ).hexdigest()
+
+        if hashed_input == password_hash:
+            st.session_state.logged_in = True
+            st.session_state.user_id = user[0]
+            st.session_state.username = username
+            return True
+
+    return False
 
     if user:
         password_hash = user[1]
