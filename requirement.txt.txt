@@ -1,3 +1,2 @@
 streamlit
-groq
-
+groq==0.8.0
