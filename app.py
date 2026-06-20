@@ -2,7 +2,7 @@ import streamlit as st
 import sqlite3
 import hashlib
 from datetime import datetime
-from groq import Groq
+from groq import groq
 
 # ==========================
 # PAGE CONFIG
@@ -19,7 +19,7 @@ st.title("📚 BPS Tutor")
 # GROQ CONFIG
 # ==========================
 client = Groq(
-    api_key="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"  # <-- replace this
+    api_key=st.secrets["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"]
 )
 
 # ==========================
