@@ -2,7 +2,7 @@ import streamlit as st
 import sqlite3
 import hashlib
 from datetime import datetime
-from groq import Groq
+import Groq
 
 # ==========================
 # PAGE CONFIG
